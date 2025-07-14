@@ -39,8 +39,7 @@ jobs:
 
     # 🧪 Step 5: Confirm correct settings.py path
     - name: 🧪 Verify settings.py exists
-      run: cat jamal_garden/jamal_garden/settings.py
-
+      run: cat JAMAL_GARDEN/jamal_garden/settings.py
     # 📁 Step 6: Collect static files
     - name: 📁 Collect static files
       run: python manage.py collectstatic --noinput
