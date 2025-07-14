@@ -7,7 +7,7 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     env:
-      DJANGO_SETTINGS_MODULE: dscp.settings  # ✅ Confirm this matches your Django project’s name
+      DJANGO_SETTINGS_MODULE: jamal_garden.settings  # ✅ Confirm this matches your Django project’s name
     steps:
     # 📥 1. Checkout source code
     - name: 📥 Checkout code
@@ -31,7 +31,7 @@ jobs:
         echo "CSRF_TRUSTED_ORIGINS=${{ secrets.CSRF_TRUSTED_ORIGINS }}" >> $GITHUB_ENV
     # 🧪 5. Print contents of settings.py to confirm import statements
     - name: 🧪 Print settings.py content
-      run: cat dscp/dscp/settings.py
+      run: cat jamal_garden/jamal_garden/settings.py
     # 📁 6. Collect static files
     - name: 📁 Collect static files
       run: python manage.py collectstatic --noinput
