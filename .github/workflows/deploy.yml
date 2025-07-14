@@ -8,54 +8,56 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+
     env:
-      DJANGO_SETTINGS_MODULE: jamal_garden.settings  # ✅ Points to your actual Django settings module
+      DJANGO_SETTINGS_MODULE: jamal_garden.settings  # ✅ Settings module matches your Django project
 
     steps:
-    # 📥 Step 1: Checkout source code
+    # 📥 1. Clone the repository
     - name: 📥 Checkout code
       uses: actions/checkout@v3
 
-    # 🐍 Step 2: Set up Python
-    - name: 🐍 Set up Python
+    # 🐍 2. Set up Python
+    - name: 🐍 Install Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.12'
 
-    # 📦 Step 3: Install dependencies
-    - name: 📦 Install dependencies
+    # 📦 3. Install dependencies
+    - name: 📦 Install requirements
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    # ⚙️ Step 4: Export environment variables from GitHub Secrets
-    - name: ⚙️ Export environment variables
+    # ⚙️ 4. Set environment variables from GitHub Secrets
+    - name: ⚙️ Configure Django environment
       run: |
         echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> $GITHUB_ENV
         echo "DJANGO_ALLOWED_HOSTS=${{ secrets.DJANGO_ALLOWED_HOSTS }}" >> $GITHUB_ENV
         echo "DJANGO_DEBUG=${{ secrets.DJANGO_DEBUG }}" >> $GITHUB_ENV
         echo "CSRF_TRUSTED_ORIGINS=${{ secrets.CSRF_TRUSTED_ORIGINS }}" >> $GITHUB_ENV
 
-    # 🧪 Step 5: Validate settings.py location
-    - name: 🧪 Confirm settings.py exists
+    # 🧪 5. Verify settings.py exists
+    - name: 🧪 Check settings.py presence
       run: cat jamal_garden/jamal_garden/settings.py
 
-    # 📁 Step 6: Collect static files
+    # ⚒️ 6. Django setup commands
     - name: 📁 Collect static files
       run: python manage.py collectstatic --noinput
 
-    # 🗃️ Step 7: Apply database migrations
-    - name: 🗃️ Run migrations
+    - name: 🗃️ Run database migrations
       run: python manage.py migrate
 
-    # 🚀 Step 8: Deploy to Azure Web App
-    - name: 🚀 Deploy to Azure Web App
+    # 🚀 7. Deploy to Azure Web App
+    - name: 🚀 Publish to Azure
       uses: azure/webapps-deploy@v2
       with:
         app-name: jg-erp-app
         slot-name: production
         publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISH_PROFILE }}
         package: .
+
+
 
 
 
