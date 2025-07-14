@@ -9,7 +9,7 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     env:
-      DJANGO_SETTINGS_MODULE: jamal_garden.settings  # ✅ matches your settings path
+      DJANGO_SETTINGS_MODULE: jamal_garden.settings  # ✅ Matches your project’s settings
 
     steps:
     # 📥 1. Checkout source code
@@ -38,16 +38,17 @@ jobs:
 
     # 🧪 5. Confirm settings.py exists
     - name: 🧪 Confirm settings.py exists
-      run: cat jamal_garden/jamal_garden/settings.py
+      run: cat jamal_garden/settings.py
 
-    # ⚙️ 6. Run Django management commands
-    - name: ⚙️ Collect static files
+    # 📁 6. Collect static files
+    - name: 📁 Collect static files
       run: python manage.py collectstatic --noinput
 
-    - name: ⚙️ Apply migrations
+    # 🗃️ 7. Apply migrations
+    - name: 🗃️ Run migrations
       run: python manage.py migrate
 
-    # 🚀 7. Deploy to Azure Web App
+    # 🚀 8. Deploy to Azure Web App
     - name: 🚀 Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
       with:
@@ -55,4 +56,7 @@ jobs:
         slot-name: production
         publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISH_PROFILE }}
         package: .
+
+
+
 
