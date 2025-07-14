@@ -1,0 +1,61 @@
+name: 🚀 Deploy Django App to Azure
+
+on:
+  push:
+    branches:
+      - main  # Triggers workflow only on pushes to main branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      DJANGO_SETTINGS_MODULE: jamal_garden.settings  # Use your actual Django project name
+
+    steps:
+    # 📥 Step 1: Checkout source code
+    - name: 📥 Checkout code
+      uses: actions/checkout@v3
+
+    # 🐍 Step 2: Set up Python
+    - name: 🐍 Install Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    # 📦 Step 3: Install dependencies
+    - name: 📦 Install requirements
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    # ⚙️ Step 4: Inject Django settings from GitHub Secrets
+    - name: ⚙️ Export environment variables
+      run: |
+        echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> $GITHUB_ENV
+        echo "DJANGO_ALLOWED_HOSTS=${{ secrets.DJANGO_ALLOWED_HOSTS }}" >> $GITHUB_ENV
+        echo "DJANGO_DEBUG=${{ secrets.DJANGO_DEBUG }}" >> $GITHUB_ENV
+        echo "CSRF_TRUSTED_ORIGINS=${{ secrets.CSRF_TRUSTED_ORIGINS }}" >> $GITHUB_ENV
+
+    # 🧪 Step 5: Validate correct settings file
+    - name: 🧪 Confirm settings.py path
+      run: cat jamal_garden/jamal_garden/settings.py
+
+    # ⚒️ Step 6: Collect static files
+    - name: 📁 Collect static files
+      run: python manage.py collectstatic --noinput
+
+    # 🗃️ Step 7: Run database migrations
+    - name: 🗃️ Apply migrations
+      run: python manage.py migrate
+
+    # 🚀 Step 8: Deploy to Azure Web App
+    - name: 🚀 Publish to Azure Web App
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: jg-erp-app  # Change to your actual Azure Web App name
+        slot-name: production
+        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISH_PROFILE }}
+        package: .
+
+
