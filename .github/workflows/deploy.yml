@@ -9,7 +9,7 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     env:
-      DJANGO_SETTINGS_MODULE: jamal_garden.settings  # ✅ Use your actual Django project name
+      DJANGO_SETTINGS_MODULE: jamal_garden.settings  # ✅ Points to your actual Django settings module
 
     steps:
     # 📥 Step 1: Checkout source code
@@ -28,7 +28,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    # ⚙️ Step 4: Export environment variables
+    # ⚙️ Step 4: Export environment variables from GitHub Secrets
     - name: ⚙️ Export environment variables
       run: |
         echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> $GITHUB_ENV
@@ -36,7 +36,7 @@ jobs:
         echo "DJANGO_DEBUG=${{ secrets.DJANGO_DEBUG }}" >> $GITHUB_ENV
         echo "CSRF_TRUSTED_ORIGINS=${{ secrets.CSRF_TRUSTED_ORIGINS }}" >> $GITHUB_ENV
 
-    # 🧪 Step 5: Confirm settings.py exists
+    # 🧪 Step 5: Validate settings.py location
     - name: 🧪 Confirm settings.py exists
       run: cat jamal_garden/jamal_garden/settings.py
 
@@ -44,7 +44,7 @@ jobs:
     - name: 📁 Collect static files
       run: python manage.py collectstatic --noinput
 
-    # 🗃️ Step 7: Apply migrations
+    # 🗃️ Step 7: Apply database migrations
     - name: 🗃️ Run migrations
       run: python manage.py migrate
 
@@ -56,6 +56,8 @@ jobs:
         slot-name: production
         publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISH_PROFILE }}
         package: .
+
+
 
 
 
